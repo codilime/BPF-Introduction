@@ -25,7 +25,7 @@ int main(void)
     simple__load(skel);
     simple__attach(skel);
 
-    for(;;) {
-    }
+    while(true)
+		;
     return 0;
 }
