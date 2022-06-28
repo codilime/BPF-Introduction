@@ -10,15 +10,14 @@ struct {
     __uint(max_entries, 256 * 1024);
 } rb SEC(".maps");
 
-struct exec_params_t {
+struct mkdir_params_t {
     u64 __unused;
     u64 __unused2;
-
-    char *file;
+    char *pathname;
 };
 
-SEC("tp/syscalls/sys_enter_execve")
-int handle_execve(struct exec_params_t *params)
+SEC("tp/syscalls/sys_enter_mkdir")
+int handle_syscall(struct mkdir_params_t *params)
 {
     struct task_struct *task = (struct task_struct*)bpf_get_current_task();
     struct my_msg *msg;
@@ -29,11 +28,10 @@ int handle_execve(struct exec_params_t *params)
         return 0;
     }
 
-    msg->tgid = BPF_CORE_READ(task, tgid);
     msg->pid = BPF_CORE_READ(task, pid);
-    bpf_get_current_comm(&msg->comm, sizeof(msg->comm));
-    bpf_probe_read_user_str(msg->file, sizeof(msg->file), params->file);
+    bpf_get_current_comm(&msg->command, sizeof(msg->command));
+    bpf_probe_read_user_str(msg->pathname, sizeof(msg->pathname), params->pathname);
     bpf_ringbuf_submit(msg, 0);
-    bpf_printk("Exec Called\n");
+    bpf_printk("Codiflaszka!\n");
     return 0;
 }

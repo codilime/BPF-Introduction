@@ -3,9 +3,8 @@
 
 struct my_msg {
     pid_t pid;
-    pid_t tgid;
-    char comm[32];
-    char file[32];
+    char command[128];
+    char pathname[128];
 };
 
 #endif // __MSG_H__

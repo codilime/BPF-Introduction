@@ -20,10 +20,8 @@ static void bump_memlock_rlimit(void)
 
 static int handle_msg(void *ctx, void *data, size_t sz)
 {
-    const struct my_msg *evt = data;
-
-    fprintf(stdout, "tgid: %d <> pid: %d -- comm: %s <> file: %s\n", evt->tgid, evt->pid, evt->comm, evt->file);
-
+    const struct my_msg *msg = data;
+    fprintf(stdout, "PID %d, command: %s, path: %s\n", msg->pid, msg->command, msg->pathname);
     return 0;
 }
 
