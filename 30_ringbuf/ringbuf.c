@@ -3,7 +3,7 @@
 #include <sys/resource.h>
 
 #include "ringbuf.skel.h"
-#include "ringbuf.h"
+#include "msg.h"
 
 static void bump_memlock_rlimit(void)
 {
@@ -18,9 +18,9 @@ static void bump_memlock_rlimit(void)
 	}
 }
 
-static int handle_evt(void *ctx, void *data, size_t sz)
+static int handle_msg(void *ctx, void *data, size_t sz)
 {
-    const struct exec_evt *evt = data;
+    const struct my_msg *evt = data;
 
     fprintf(stdout, "tgid: %d <> pid: %d -- comm: %s <> file: %s\n", evt->tgid, evt->pid, evt->comm, evt->file);
 
@@ -35,9 +35,9 @@ int main(void)
     ringbuf__load(skel);
     ringbuf__attach(skel);
 
-    struct ring_buffer *rb = ring_buffer__new(bpf_map__fd(skel->maps.rb), handle_evt, NULL, NULL);
+    struct ring_buffer *rb = ring_buffer__new(bpf_map__fd(skel->maps.rb), handle_msg, NULL, NULL);
 
-    for(;;) {
+    while(true) {
         ring_buffer__poll(rb, 1000);
     }
     return 0;

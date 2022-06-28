@@ -1,7 +1,7 @@
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_core_read.h>
-#include "ringbuf.h"
+#include "msg.h"
 
 char LICENSE[] SEC("license") = "GPL";
 
@@ -21,19 +21,19 @@ SEC("tp/syscalls/sys_enter_execve")
 int handle_execve(struct exec_params_t *params)
 {
     struct task_struct *task = (struct task_struct*)bpf_get_current_task();
-    struct exec_evt *evt = {0};
+    struct my_msg *msg;
 
-    evt = bpf_ringbuf_reserve(&rb, sizeof(*evt), 0);
-    if (!evt) {
-        bpf_printk("ringbuffer not reserved\n");
+    msg = bpf_ringbuf_reserve(&rb, sizeof(*msg), 0);
+    if (!msg) {
+        bpf_printk("ERROR: unable to reserve memory\n");
         return 0;
     }
 
-    evt->tgid = BPF_CORE_READ(task, tgid);
-    evt->pid = BPF_CORE_READ(task, pid);
-    bpf_get_current_comm(&evt->comm, sizeof(evt->comm));
-    bpf_probe_read_user_str(evt->file, sizeof(evt->file), params->file);
-    bpf_ringbuf_submit(evt, 0);
+    msg->tgid = BPF_CORE_READ(task, tgid);
+    msg->pid = BPF_CORE_READ(task, pid);
+    bpf_get_current_comm(&msg->comm, sizeof(msg->comm));
+    bpf_probe_read_user_str(msg->file, sizeof(msg->file), params->file);
+    bpf_ringbuf_submit(msg, 0);
     bpf_printk("Exec Called\n");
     return 0;
 }
