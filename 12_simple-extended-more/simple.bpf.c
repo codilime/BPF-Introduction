@@ -13,6 +13,6 @@ struct mkdir_params_t {
 SEC("tp/syscalls/sys_enter_mkdir")
 int handle_mkdir(struct mkdir_params_t *params)
 {
-    bpf_printk("Name: %s\n", params->pathname);
+    bpf_printk("Name: %s", params->pathname);
     return 0;
 }
