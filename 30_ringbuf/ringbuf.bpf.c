@@ -32,6 +32,6 @@ int handle_syscall(struct mkdir_params_t *params)
     bpf_get_current_comm(&msg->command, sizeof(msg->command));
     bpf_probe_read_user_str(msg->pathname, sizeof(msg->pathname), params->pathname);
     bpf_ringbuf_submit(msg, 0);
-    bpf_printk("Codiflaszka!\n");
+    bpf_printk("Codilime!");
     return 0;
 }
