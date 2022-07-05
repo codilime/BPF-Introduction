@@ -61,6 +61,7 @@ int main(void)
 
     opts.flags = 0;
     opts.prog_fd = 0;
+    opts.prog_id = 0;
     int dtch = bpf_tc_detach(&hook, &opts);
     int dstr = bpf_tc_hook_destroy(&hook);
 	
