@@ -19,8 +19,8 @@ static int show_some_info(struct iphdr *iph)
 {
     uint32_t dest_addr = bpf_ntohl(iph->daddr);
 
-    // if (dest_addr == 0x1f3de1fe)
-    //     return 0;  // workaround: filter my SSH traffic
+    // if (dest_addr == 0xd5bd2fd2)
+    //     return 0;  // workaround: filter vscode-server traffic
 
     switch(iph->protocol)
     {
